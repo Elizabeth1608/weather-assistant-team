@@ -15,58 +15,61 @@ public class ApiService {
     private static final Gson gson = new Gson();
     
     public WeatherData getCurrentWeather(String city) {
-        System.out.println("\n=== ЗАПРОС ПОГОДЫ ===");
-        System.out.println("Город: " + city);
+    System.out.println("\n=== ЗАПРОС ПОГОДЫ ===");
+    System.out.println("Город: " + city);
+    
+    try {
+        String encodedCity = URLEncoder.encode(city, "UTF-8");
+        String urlString = Config.WEATHER_ENDPOINT + "?city=" + encodedCity;
         
-        try {
-            String encodedCity = URLEncoder.encode(city, "UTF-8");
-            String urlString = Config.WEATHER_ENDPOINT + "?city=" + encodedCity;
-            
-            System.out.println("Запрос к: " + urlString);
-            
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            
-            int responseCode = conn.getResponseCode();
-            System.out.println("Код ответа: " + responseCode);
-            
-            if (responseCode == 200) {
-                BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-                
-                String jsonResponse = response.toString();
-                System.out.println("Получен ответ от сервера:");
-                System.out.println(jsonResponse);
-                
-                return parseWeatherResponse(jsonResponse, city);
-            } else {
-                System.out.println("ОШИБКА: Код " + responseCode);
-                BufferedReader errorReader = new BufferedReader(
-                    new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
-                StringBuilder errorResponse = new StringBuilder();
-                String line;
-                while ((line = errorReader.readLine()) != null) {
-                    errorResponse.append(line);
-                }
-                errorReader.close();
-                System.out.println("Ошибка: " + errorResponse.toString());
+        System.out.println("Запрос к: " + urlString);
+        
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+        
+        int responseCode = conn.getResponseCode();
+        System.out.println("Код ответа: " + responseCode);
+        
+        if (responseCode == 200) {
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
             }
-        } catch (Exception e) {
-            System.out.println("Исключение: " + e.getMessage());
-            e.printStackTrace();
+            reader.close();
+            
+            String jsonResponse = response.toString();
+            System.out.println("=== СЫРОЙ ОТВЕТ ОТ СЕРВЕРА ===");
+            System.out.println(jsonResponse);
+            System.out.println("=== КОНЕЦ ОТВЕТА ===");
+            
+            // Проанализируем JSON
+            System.out.println("\n=== АНАЛИЗ JSON ===");
+            JsonObject json = gson.fromJson(jsonResponse, JsonObject.class);
+            System.out.println("Есть поле 'humidity'? " + json.has("humidity"));
+            System.out.println("Есть поле 'pressure'? " + json.has("pressure"));
+            System.out.println("Есть поле 'windSpeed'? " + json.has("windSpeed"));
+            System.out.println("Есть поле 'temperature'? " + json.has("temperature"));
+            System.out.println("Есть поле 'description'? " + json.has("description"));
+            
+            if (json.has("humidity")) {
+                System.out.println("humidity value: " + json.get("humidity"));
+                System.out.println("humidity is null? " + json.get("humidity").isJsonNull());
+            }
+            
+            return parseWeatherResponse(jsonResponse, city);
         }
-        
-        return createTestData(city);
+    } catch (Exception e) {
+        System.out.println("Исключение: " + e.getMessage());
     }
+    
+    return createTestData(city);
+}
     
     private WeatherData parseWeatherResponse(String jsonResponse, String city) {
         try {

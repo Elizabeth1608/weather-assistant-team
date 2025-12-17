@@ -1,9 +1,9 @@
+com\weather\client\model\ForecastData.class
+com\weather\client\controller\WeatherController.class
+com\weather\client\service\WeatherAiService.class
 com\weather\client\config\Config.class
 com\weather\client\model\UserGoal.class
 com\weather\client\model\WeatherData.class
-com\weather\client\model\ForecastData.class
-com\weather\client\controller\WeatherController.class
 com\weather\client\controller\MainController.class
 com\weather\client\Main.class
 com\weather\client\service\ApiService.class
-com\weather\client\service\WeatherAiService.class
