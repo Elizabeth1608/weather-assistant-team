@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="com.weather.client.controller.MainController"
+      spacing="10" 
+      style="-fx-padding: 20; -fx-background-color: #f5f5f5;">
+    
+    <Label text="Погодный Ассистент" 
+           style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Город:" style="-fx-font-size: 14;"/>
+        <TextField fx:id="cityInput" promptText="Введите город" 
+                   style="-fx-pref-width: 200; -fx-background-radius: 5;"/>
+        <Button fx:id="searchButton" text="Поиск" 
+                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 5;"/>
+    </HBox>
+    
+    <Separator/>
+    
+    <HBox spacing="20">
+        <VBox spacing="10" style="-fx-pref-width: 300;">
+            <Label fx:id="cityLabel" text="Москва" 
+                   style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+            
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fx:id="weatherIcon" fitWidth="80" fitHeight="80" 
+                           preserveRatio="true"/>
+                <VBox spacing="5">
+                    <Label fx:id="tempLabel" text="--°C" 
+                           style="-fx-font-size: 36; -fx-font-weight: bold;"/>
+                    <Label fx:id="descriptionLabel" text="--" 
+                           style="-fx-font-size: 14; -fx-text-fill: #666;"/>
+                </VBox>
+            </HBox>
+            
+            <VBox spacing="5" style="-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 5;">
+                <Label fx:id="feelsLikeLabel" text="Ощущается: --°C"/>
+                <Label fx:id="humidityLabel" text="Влажность: --%"/>
+                <Label fx:id="pressureLabel" text="Давление: -- hPa"/>
+                <Label fx:id="windLabel" text="Ветер: -- м/с"/>
+            </VBox>
+        </VBox>
+        
+        <VBox spacing="10" style="-fx-pref-width: 300;">
+            <Label text="Рекомендации" 
+                   style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+            
+            <Label fx:id="recommendationLabel" text="Введите город и нажмите поиск" 
+                   wrapText="true" 
+                   style="-fx-padding: 15; -fx-background-color: #E3F2FD; -fx-background-radius: 5;"/>
+        </VBox>
+    </HBox>
+    
+    <Label text="Подключение к серверу: localhost:8085" 
+           style="-fx-font-size: 12; -fx-text-fill: #666;"/>
+    
+</VBox>

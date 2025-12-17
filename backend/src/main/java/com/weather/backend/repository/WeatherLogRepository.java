@@ -8,5 +8,5 @@ import com.weather.backend.entity.WeatherLog;
 
 @Repository
 public interface WeatherLogRepository extends JpaRepository<WeatherLog, Long> {
-    // Пока методов не нужно
+
 }
