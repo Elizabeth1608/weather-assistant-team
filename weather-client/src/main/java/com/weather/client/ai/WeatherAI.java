@@ -5,6 +5,7 @@ import com.weather.client.model.WeatherData;
 public class WeatherAI {
     
     public Recommendation analyzeWithMyData(String activity, WeatherData weather) {
+
         int score = 0;
         StringBuilder details = new StringBuilder();
         double temp = weather.getTemperature();

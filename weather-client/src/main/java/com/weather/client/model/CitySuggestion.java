@@ -7,7 +7,6 @@ public class CitySuggestion {
     private double lat;
     private double lon;
     
-    // Конструктор
     public CitySuggestion() {}
     
     public CitySuggestion(String name, String country, String state, double lat, double lon) {
@@ -18,7 +17,6 @@ public class CitySuggestion {
         this.lon = lon;
     }
     
-    // Геттеры и сеттеры
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     

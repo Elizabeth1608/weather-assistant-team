@@ -10,7 +10,6 @@ public class ForecastData {
     private String description;
     private String icon;
     
-    // ДОБАВЬТЕ ГЕТТЕР ДЛЯ ДНЯ НЕДЕЛИ (удобно для отображения)
     public String getDayOfWeek() {
         if (date == null) return "";
         String[] days = {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
@@ -22,7 +21,6 @@ public class ForecastData {
         return date.toString();
     }
     
-    // Геттеры и сеттеры (оставьте как есть)
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
     

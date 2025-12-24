@@ -287,9 +287,9 @@ public class MainController {
         
         String activity = selected.replace("🎣", "")
                                   .replace("🏃", "")
-                                  .replace("🧺", "")
+                                  .replace("🌳", "")
                                   .replace("🚴", "")
-                                  .replace("🥾", "")
+                                  .replace("👢", "")
                                   .trim()
                                   .toLowerCase();
         
