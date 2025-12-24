@@ -1,12 +1,11 @@
+com\weather\client\service\DatabaseService.class
 com\weather\client\model\ForecastData.class
 com\weather\client\ai\HistoryManager.class
-com\weather\client\controller\WeatherController.class
 com\weather\client\ai\WeatherAI.class
 com\weather\client\service\WeatherAiService.class
 com\weather\client\util\AutoCompletePopup.class
 com\weather\client\config\Config.class
 com\weather\client\model\CitySuggestion.class
-com\weather\client\model\UserGoal.class
 com\weather\client\model\WeatherData.class
 com\weather\client\ai\SimpleWeatherData.class
 com\weather\client\controller\MainController.class

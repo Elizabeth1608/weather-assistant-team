@@ -80,7 +80,7 @@ public class HistoryManager {
     public void printHistory() {
         List<String> history = getHistory();
         System.out.println("\n" + "=".repeat(50));
-        System.out.println("📊 ИСТОРИЯ ЗАПРОСОВ (" + history.size() + " записей)");
+        System.out.println("ИСТОРИЯ ЗАПРОСОВ (" + history.size() + " записей)");
         System.out.println("=".repeat(50));
         
         if (history.isEmpty()) {

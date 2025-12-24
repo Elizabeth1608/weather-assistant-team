@@ -22,7 +22,7 @@ public class ApiService {
     private static final Gson gson = new Gson();
     
     public WeatherData getCurrentWeather(String city) {
-        System.out.println("\n=== ЗАПРОС ПОГОДЫ ===");
+        System.out.println("\n ЗАПРОС ПОГОДЫ");
         System.out.println("Город: " + city);
         
         WeatherData result = null;
@@ -53,11 +53,11 @@ public class ApiService {
                 reader.close();
                 
                 String jsonResponse = response.toString();
-                System.out.println("=== СЫРОЙ ОТВЕТ ОТ СЕРВЕРА ===");
+                System.out.println("СЫРОЙ ОТВЕТ ОТ СЕРВЕРА");
                 System.out.println(jsonResponse);
-                System.out.println("=== КОНЕЦ ОТВЕТА ===");
+                System.out.println("КОНЕЦ ОТВЕТА");
                 
-                System.out.println("\n=== АНАЛИЗ JSON ===");
+                System.out.println("\n АНАЛИЗ JSON");
                 JsonObject json = gson.fromJson(jsonResponse, JsonObject.class);
                 System.out.println("Есть поле 'humidity'? " + json.has("humidity"));
                 System.out.println("Есть поле 'pressure'? " + json.has("pressure"));
@@ -190,9 +190,9 @@ public class ApiService {
                 reader.close();
                 
                 String jsonResponse = response.toString();
-                System.out.println("=== СЫРОЙ ОТВЕТ ПРОГНОЗА ===");
+                System.out.println("СЫРОЙ ОТВЕТ ПРОГНОЗА");
                 System.out.println(jsonResponse.substring(0, Math.min(500, jsonResponse.length())) + "...");
-                System.out.println("=== КОНЕЦ ОТВЕТА ===");
+                System.out.println("КОНЕЦ ОТВЕТА");
                 
                 result = parseForecastResponse(jsonResponse, city);
             }
@@ -379,13 +379,9 @@ public List<CitySuggestion> getCitySuggestions(String query) {
             
         } else {
             System.out.println("Ошибка сервера: код " + responseCode);
-            // Если сервер недоступен - просто возвращаем пустой список
-            // Пользователь увидит, что автодополнение не работает
         }
     } catch (Exception e) {
         System.out.println("Ошибка при поиске городов: " + e.getMessage());
-        // Если сервер недоступен - возвращаем пустой список
-        // Пользователь сможет вручную ввести город
     }
     
     return suggestions;

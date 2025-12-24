@@ -6,11 +6,10 @@ C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\w
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\ai\SimpleWeatherData.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\service\WeatherAiService.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\ai\HistoryManager.java
-C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\controller\WeatherController.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\ai\WeatherAI.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\model\CitySuggestion.java
-C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\model\UserGoal.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\util\AutoCompletePopup.java
+C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\service\DatabaseService.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\model\ForecastData.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\Main.java
 C:\javaprojects\titova\weather-assistant-team\weather-client\src\main\java\com\weather\client\model\WeatherData.java

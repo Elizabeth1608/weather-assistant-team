@@ -54,7 +54,7 @@
             <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3); -fx-padding: 25;">
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <VBox spacing="5">
-                        <Label fx:id="cityLabel" text="Москва, Россия" 
+                        <Label fx:id="cityLabel" text="--" 
                                style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #333;"/>
                         <Label text="Обновлено только что" 
                                style="-fx-font-size: 12; -fx-text-fill: #666;"/>

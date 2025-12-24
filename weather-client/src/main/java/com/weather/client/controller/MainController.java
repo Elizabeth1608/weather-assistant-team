@@ -4,6 +4,7 @@ import com.weather.client.model.CitySuggestion;
 import com.weather.client.model.WeatherData;
 import com.weather.client.model.ForecastData;
 import com.weather.client.service.ApiService;
+import com.weather.client.service.DatabaseService;
 import com.weather.client.ai.WeatherAI;
 import com.weather.client.ai.Recommendation;
 import com.weather.client.ai.WeatherLogger;
@@ -41,6 +42,7 @@ public class MainController {
     @FXML private Label forecastStatusLabel;
     
     private final ApiService apiService = new ApiService();
+    private final DatabaseService dbService = DatabaseService.getInstance();
     private final WeatherAI weatherAI = new WeatherAI();
     private final WeatherLogger logger = WeatherLogger.getInstance();
     private final HistoryManager historyManager = new HistoryManager();
@@ -50,6 +52,9 @@ public class MainController {
     public void initialize() {
         System.out.println("🌤️ Погодный Ассистент запущен");
         logger.logInfo("APP", "Приложение запущено");
+        
+        // 1. Пробуем загрузить последний город из БД
+        loadLastCity();
         
         if (activityComboBox != null) {
             activityComboBox.setItems(FXCollections.observableArrayList(
@@ -92,6 +97,19 @@ public class MainController {
         }
         
         animateWelcome();
+    }
+    
+    private void loadLastCity() {
+        String lastCity = dbService.getLastCity();
+        if (lastCity != null && !lastCity.isEmpty()) {
+            cityInput.setText(lastCity);
+            System.out.println("Загружен последний город из БД: " + lastCity);
+            logger.logInfo("DB", "Загружен последний город из БД: " + lastCity);
+
+        } else {
+            System.out.println("В базе данных нет сохраненных городов");
+            logger.logInfo("DB", "В базе данных нет сохраненных городов");
+        }
     }
     
     private void animateWelcome() {
@@ -216,6 +234,11 @@ public class MainController {
                         
                         historyManager.printHistory();
                         
+                        dbService.saveCity(city);
+                        System.out.println("Город сохранен в БД: " + city);
+                        logger.logInfo("DB", "Город сохранен в БД: " + city);
+
+                        
                         if (forecast != null && !forecast.isEmpty()) {
   
                             int daysToShow = Math.min(forecast.size(), 5);
@@ -333,7 +356,7 @@ public class MainController {
     
     private WeatherData extractCurrentWeatherFromUI() {
         try {
-            if (cityLabel.getText().equals("❌ Ошибка")) {
+            if (cityLabel.getText().equals("Ошибка")) {
                 return null;
             }
             
@@ -388,45 +411,12 @@ public class MainController {
             logger.logError("AI", "Ошибка AI анализа: " + e.getMessage());
             System.err.println("Ошибка AI: " + e.getMessage());
 
-            generateBeautifulRecommendation(weather);
+            recommendationLabel.setText("🤖 AI временно недоступен\n\n" +
+                                   "Проверьте подключение к интернету\n" +
+                                   "и повторите попытку позже.");
         }
     }
     
-    private void generateBeautifulRecommendation(WeatherData weather) {
-        StringBuilder rec = new StringBuilder();
-        double temp = weather.getTemperature();
-        double wind = weather.getWindSpeed();
-        double humidity = weather.getHumidity();
-        String desc = weather.getDescription().toLowerCase();
-        
-        rec.append("💡 На основе текущей погоды:\n\n");
-        
-        rec.append("👕 Одежда: ");
-        if (temp < -5) rec.append("Термобельё, пуховик, шапка, шарф, варежки\n");
-        else if (temp < 5) rec.append("Тёплая куртка, шапка, перчатки\n");
-        else if (temp < 15) rec.append("Куртка, свитер, джинсы\n");
-        else if (temp < 25) rec.append("Футболка, кофта, ветровка\n");
-        else rec.append("Футболка, шорты, головной убор\n");
-        
-        rec.append("\n🎯 Активности: ");
-        if (desc.contains("дожд") || desc.contains("снег")) {
-            rec.append("Отличный день для дома: книги, фильмы, хобби\n");
-        } else if (temp > 25) {
-            rec.append("Пляж, бассейн, пикник в тени\n");
-        } else if (temp > 15 && !desc.contains("облач")) {
-            rec.append("Прогулка, велосипед, пикник\n");
-        } else {
-            rec.append("Кафе, музеи, шоппинг\n");
-        }
-        
-        rec.append("\n✨ Советы: ");
-        if (wind > 10) rec.append("Сильный ветер, будьте осторожны. ");
-        if (humidity > 80) rec.append("Высокая влажность. ");
-        if (temp > 30) rec.append("Пейте больше воды. ");
-        if (temp < 0) rec.append("Теплее одевайтесь. ");
-        
-        recommendationLabel.setText(rec.toString());
-    }
     
     private void displayForecast(List<ForecastData> forecastList) {
         if (forecastContainer == null) {
@@ -455,9 +445,9 @@ public class MainController {
     
     private VBox createForecastCard(ForecastData forecast, int dayIndex) {
         VBox card = new VBox(8);
-        card.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10; " +
-                      "-fx-padding: 15; -fx-alignment: center; " +
-                      "-fx-pref-width: 110;");
+        card.setStyle("-fx-background-color: #F5FBFF; -fx-background-radius: 10; " +
+              "-fx-border-color: #BBDEFB; -fx-border-radius: 10; -fx-border-width: 1; " +
+              "-fx-padding: 15; -fx-alignment: center; -fx-pref-width: 110;");
         
         String[] dayNames = {"Сегодня", "Завтра", "Послезавтра", "Через 2 дня", "Через 3 дня"};
         String dayName = dayIndex < dayNames.length ? dayNames[dayIndex] : "День " + (dayIndex + 1);
@@ -526,14 +516,14 @@ public class MainController {
     }
     
     private void showErrorUI() {
-        cityLabel.setText("❌ Ошибка");
+        cityLabel.setText("Ошибка");
         tempLabel.setText("--°C");
         tempLabel.setStyle("-fx-text-fill: #F44336;");
         feelsLikeLabel.setText("--°C");
         humidityLabel.setText("--%");
         pressureLabel.setText("-- hPa");
         windLabel.setText("-- м/с");
-        descriptionLabel.setText("❌ Не удалось получить данные");
+        descriptionLabel.setText("Не удалось получить данные");
         weatherIcon.setImage(null);
         recommendationLabel.setText("Проверьте подключение к серверу и повторите попытку.");
         forecastStatusLabel.setText("Прогноз не загружен");
