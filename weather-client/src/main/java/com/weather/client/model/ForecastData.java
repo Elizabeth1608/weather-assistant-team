@@ -1,6 +1,5 @@
 package com.weather.client.model;
 
-import com.google.gson.annotations.SerializedName;
 import java.time.LocalDate;
 
 public class ForecastData {
@@ -11,6 +10,19 @@ public class ForecastData {
     private String description;
     private String icon;
     
+    // ДОБАВЬТЕ ГЕТТЕР ДЛЯ ДНЯ НЕДЕЛИ (удобно для отображения)
+    public String getDayOfWeek() {
+        if (date == null) return "";
+        String[] days = {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
+        return days[date.getDayOfWeek().getValue() - 1];
+    }
+    
+    public String getFormattedDate() {
+        if (date == null) return "";
+        return date.toString();
+    }
+    
+    // Геттеры и сеттеры (оставьте как есть)
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
     

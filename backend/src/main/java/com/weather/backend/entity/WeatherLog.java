@@ -117,7 +117,6 @@ public class WeatherLog {
     public String getWeatherIcon() { return weatherIcon; }
     public String getWeatherMain() { return weatherMain; }
     
-    // Сеттеры
     public void setId(Long id) { this.id = id; }
     public void setCity(String city) { this.city = city; }
     public void setTemperature(Double temperature) { this.temperature = temperature; }

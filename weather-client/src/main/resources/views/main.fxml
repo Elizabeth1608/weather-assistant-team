@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.*?>
@@ -14,37 +15,42 @@
       spacing="0" 
       style="-fx-background-color: linear-gradient(to bottom, #2196F3, #E3F2FD);">
     
-  <!-- ШАПКА -->
-<HBox style="-fx-background-color: #1565C0; -fx-padding: 15; -fx-alignment: center;">
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <!-- ЭМОДЗИ вместо картинки -->
-        <Label text="⛅" style="-fx-font-size: 32; -fx-text-fill: white;"/>
-        <VBox spacing="2">
-            <Label text="Погодный Ассистент" 
-                   style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;"/>
-            <Label text="Точный прогноз для ваших планов" 
-                   style="-fx-text-fill: #BBDEFB; -fx-font-size: 12;"/>
-        </VBox>
+    <HBox style="-fx-background-color: #1565C0; -fx-padding: 15; -fx-alignment: center;">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="⛅" style="-fx-font-size: 32; -fx-text-fill: white;"/>
+            <VBox spacing="2">
+                <Label text="Погодный Ассистент" 
+                       style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;"/>
+                <Label text="Точный прогноз для ваших планов" 
+                       style="-fx-text-fill: #BBDEFB; -fx-font-size: 12;"/>
+            </VBox>
+        </HBox>
+        
+        <Region HBox.hgrow="ALWAYS"/>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-background-color: white; -fx-background-radius: 25; -fx-padding: 5 15;">
+            <TextField fx:id="cityInput" 
+                       promptText="Введите город..." 
+                       style="-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 14; -fx-pref-width: 200;"/>
+            <Button fx:id="searchButton" 
+                    text="🔍 Поиск" 
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        </HBox>
     </HBox>
+<HBox spacing="10" alignment="CENTER" style="-fx-padding: 10 20;">
+    <Label text="Активность:" 
+           style="-fx-font-weight: bold; -fx-text-fill: #555; -fx-font-size: 14;"/>
     
-    <Region HBox.hgrow="ALWAYS"/>
-    
-    <!-- Поиск -->
-    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-background-color: white; -fx-background-radius: 25; -fx-padding: 5 15;">
-        <TextField fx:id="cityInput" 
-                   promptText="Введите город..." 
-                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 14; -fx-pref-width: 200;"/>
-        <Button fx:id="searchButton" 
-                text="🔍 Поиск" 
-                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-cursor: hand;"/>
-    </HBox>
+    <ComboBox fx:id="activityComboBox" 
+              style="-fx-pref-width: 180; 
+                     -fx-background-color: white; 
+                     -fx-background-radius: 5; 
+                     -fx-border-color: #ddd; 
+                     -fx-border-radius: 5;"/>
 </HBox>
-    
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-border-width: 0;">
         <VBox spacing="20" style="-fx-padding: 20;">
             
-            <!-- КАРТОЧКА ТЕКУЩЕЙ ПОГОДЫ -->
             <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3); -fx-padding: 25;">
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <VBox spacing="5">
@@ -66,27 +72,24 @@
                 
                 <Separator style="-fx-padding: 15 0;"/>
                 
-                <!-- ОПИСАНИЕ -->
                 <Label fx:id="descriptionLabel" text="--" 
                        style="-fx-font-size: 18; -fx-text-fill: #555; -fx-font-weight: bold; -fx-alignment: center;"/>
                 
                 <Separator style="-fx-padding: 15 0;"/>
                 
-                <!-- ДЕТАЛИ ПОГОДЫ -->
                 <GridPane hgap="20" vgap="15" style="-fx-padding: 10 0;">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="50"/>
                         <ColumnConstraints percentWidth="50"/>
                     </columnConstraints>
                     
-                    <!-- ЛЕВЫЙ СТОЛБЕЦ -->
                     <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="🌡️" style="-fx-font-size: 20;"/>
                             <VBox>
                                 <Label text="Ощущается как" style="-fx-text-fill: #666; -fx-font-size: 12;"/>
                                 <Label fx:id="feelsLikeLabel" text="--°C" 
-       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                                       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
                             </VBox>
                         </HBox>
                     </VBox>
@@ -97,19 +100,18 @@
                             <VBox>
                                 <Label text="Влажность" style="-fx-text-fill: #666; -fx-font-size: 12;"/>
                                 <Label fx:id="humidityLabel" text="--%" 
-       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                                       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
                             </VBox>
                         </HBox>
                     </VBox>
                     
-                    <!-- ВТОРОЙ РЯД -->
                     <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="📊" style="-fx-font-size: 20;"/>
                             <VBox>
                                 <Label text="Давление" style="-fx-text-fill: #666; -fx-font-size: 12;"/>
-                               <Label fx:id="pressureLabel" text="-- hPa" 
-       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                                <Label fx:id="pressureLabel" text="-- hPa" 
+                                       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
                             </VBox>
                         </HBox>
                     </VBox>
@@ -120,14 +122,13 @@
                             <VBox>
                                 <Label text="Ветер" style="-fx-text-fill: #666; -fx-font-size: 12;"/>
                                 <Label fx:id="windLabel" text="-- м/с" 
-       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                                       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
                             </VBox>
                         </HBox>
                     </VBox>
                 </GridPane>
             </VBox>
             
-            <!-- КАРТОЧКА РЕКОМЕНДАЦИЙ -->
             <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3); -fx-padding: 20;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="💡" style="-fx-font-size: 24;"/>
@@ -140,48 +141,25 @@
                        style="-fx-padding: 15 0 0 0; -fx-font-size: 14; -fx-text-fill: #444; -fx-line-spacing: 5;"/>
             </VBox>
             
-            <!-- ПРОГНОЗ НА 4 ДНЯ (ЗАГОЛОВОК - ПОКА ЗАГЛУШКА) -->
             <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3); -fx-padding: 20;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="📅" style="-fx-font-size: 24;"/>
                     <Label text="Прогноз на 4 дня" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #333;"/>
                 </HBox>
                 
-                <HBox spacing="20" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
-                    <!-- ДЕНЬ 1 -->
-                    <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-padding: 15; -fx-pref-width: 100;">
-                        <Label text="Завтра" style="-fx-font-weight: bold; -fx-text-fill: #666;"/>
-                        <Label text="--°C" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
-                        <Label text="--" style="-fx-text-fill: #666;"/>
-                    </VBox>
+                <HBox fx:id="forecastContainer" 
+                      spacing="20" 
+                      alignment="CENTER" 
+                      style="-fx-padding: 20 0 0 0;">
                     
-                    <!-- ДЕНЬ 2 -->
-                    <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-padding: 15; -fx-pref-width: 100;">
-                        <Label text="Пт" style="-fx-font-weight: bold; -fx-text-fill: #666;"/>
-                        <Label text="--°C" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
-                        <Label text="--" style="-fx-text-fill: #666;"/>
-                    </VBox>
                     
-                    <!-- ДЕНЬ 3 -->
-                    <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-padding: 15; -fx-pref-width: 100;">
-                        <Label text="Сб" style="-fx-font-weight: bold; -fx-text-fill: #666;"/>
-                        <Label text="--°C" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
-                        <Label text="--" style="-fx-text-fill: #666;"/>
-                    </VBox>
-                    
-                    <!-- ДЕНЬ 4 -->
-                    <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-padding: 15; -fx-pref-width: 100;">
-                        <Label text="Вс" style="-fx-font-weight: bold; -fx-text-fill: #666;"/>
-                        <Label text="--°C" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
-                        <Label text="--" style="-fx-text-fill: #666;"/>
-                    </VBox>
                 </HBox>
                 
-                <Label text="Для отображения прогноза введите город" 
+                <Label fx:id="forecastStatusLabel" 
+                       text="Для отображения прогноза введите город" 
                        style="-fx-padding: 20 0 0 0; -fx-font-size: 12; -fx-text-fill: #999; -fx-alignment: center;"/>
             </VBox>
             
-            <!-- ФУТЕР -->
             <HBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
                 <Label text="Подключение к серверу: localhost:8085" 
                        style="-fx-text-fill: #666; -fx-font-size: 11;"/>

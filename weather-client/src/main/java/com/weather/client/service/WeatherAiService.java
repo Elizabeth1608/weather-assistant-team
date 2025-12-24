@@ -80,7 +80,7 @@ public class WeatherAiService {
                 if (temp > 30) {
                     recommendation.append("❌ Осторожно: жарко для бега (").append(temp).append("°C)");
                 } else if (conditions.contains("дождь")) {
-                    recommendation.append("⚠️ Можно бегать, но осторожно: дождь");
+                    recommendation.append("👎 Можно бегать, но осторожно: дождь");
                 } else {
                     recommendation.append("✅ Отличная погода для бега");
                 }

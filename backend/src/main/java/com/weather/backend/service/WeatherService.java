@@ -50,7 +50,6 @@ public class WeatherService {
             
             String jsonResponse = restTemplate.getForObject(url, String.class);
             
-            // Проверка на несуществующий город
             if (jsonResponse == null || jsonResponse.contains("\"cod\":\"404\"")) {
                 log.error("Город не найден: {}", city);
                 throw new CityNotFoundException(city);
@@ -61,7 +60,6 @@ public class WeatherService {
                 throw new WeatherApiException("Неверный API ключ", city, apiUrl);
             }
             
-            // === ПАРСИМ ОСНОВНЫЕ ДАННЫЕ ===
             JsonNode root = objectMapper.readTree(jsonResponse);
             JsonNode mainNode = root.path("main");
             JsonNode weatherNode = root.path("weather").get(0);
@@ -87,7 +85,6 @@ public class WeatherService {
             long sunrise = sysNode.path("sunrise").asLong();
             long sunset = sysNode.path("sunset").asLong();
             
-            // === ПАРСИМ ОСАДКИ ===
             double precipitation = 0.0;
             JsonNode rainNode = root.path("rain");
             JsonNode snowNode = root.path("snow");
@@ -97,16 +94,13 @@ public class WeatherService {
                 precipitation = snowNode.path("1h").asDouble();
             }
             
-            // === КОНВЕРТАЦИЯ ГРАДУСОВ В НАПРАВЛЕНИЕ ===
             String windDirection = convertDegToDirection(windDeg);
             
-            // === ГЕНЕРАЦИЯ РЕКОМЕНДАЦИЙ ===
             String recommendation = generateDetailedRecommendation(
                 temperature, feelsLike, description, humidity,
                 windSpeed, clouds, precipitation
             );
             
-            // === СОЗДАЕМ И СОХРАНЯЕМ ОБЪЕКТ ===
             WeatherLog weatherLog = new WeatherLog();
             weatherLog.setCity(city);
             weatherLog.setTemperature(temperature);
@@ -124,13 +118,11 @@ public class WeatherService {
             weatherLog.setWeatherMain(weatherMain);
             weatherLog.setWeatherIcon(icon);
             
-            // Описание (обрезаем если слишком длинное)
             if (description.length() > 200) {
                 description = description.substring(0, 200);
             }
             weatherLog.setDescription(description);
             
-            // Рекомендация (обрезаем если слишком длинная)
             if (recommendation.length() > 1000) {
                 recommendation = recommendation.substring(0, 997) + "...";
             }
@@ -139,13 +131,12 @@ public class WeatherService {
             WeatherLog savedWeatherLog = weatherLogRepository.save(weatherLog);
             log.info("Погода сохранена в БД для города: {}", city);
             
-            // Логируем уведомление вместо WebSocket
             log.info("Уведомление: Погода для {} обновлена: {}°C", city, savedWeatherLog.getTemperature());
             
             return savedWeatherLog;
             
         } catch (CityNotFoundException e) {
-            // Пробрасываем дальше для обработки в GlobalExceptionHandler
+
             throw e;
         } catch (HttpClientErrorException e) {
             log.error("HTTP ошибка API для города {}: {}", city, e.getMessage());
@@ -156,14 +147,12 @@ public class WeatherService {
         }
     }
     
-    // ========== КОНВЕРТАЦИЯ ГРАДУСОВ В НАПРАВЛЕНИЕ ВЕТРА ==========
     private String convertDegToDirection(int degrees) {
         String[] directions = {"С", "СВ", "В", "ЮВ", "Ю", "ЮЗ", "З", "СЗ"};
         int index = (int) Math.round((degrees % 360) / 45.0) % 8;
         return directions[index];
     }
     
-    // ========== БАЗОВЫЙ МЕТОД ГЕНЕРАЦИИ РЕКОМЕНДАЦИЙ ==========
     private String generateRecommendation(double temp, String description, double windSpeed) {
         StringBuilder recommendation = new StringBuilder();
         
@@ -211,14 +200,12 @@ public class WeatherService {
         return result;
     }
     
-    // ========== УЛУЧШЕННЫЙ МЕТОД ГЕНЕРАЦИИ РЕКОМЕНДАЦИЙ ==========
     private String generateDetailedRecommendation(double temp, double feelsLike, 
                                                 String description, int humidity,
                                                 double windSpeed, int clouds,
                                                 double precipitation) {
         StringBuilder recommendation = new StringBuilder();
         
-        // Температура
         if (temp < -15) {
             recommendation.append("🚨 Экстремальный холод! Оставайтесь в помещении. ");
         } else if (temp < -5) {
@@ -235,7 +222,6 @@ public class WeatherService {
             recommendation.append("🚨 Очень жарко! Избегайте солнца днем. ");
         }
         
-        // Разница между температурой и "ощущается как"
         if (Math.abs(temp - feelsLike) > 3) {
             if (feelsLike < temp) {
                 recommendation.append("Ветер делает холоднее. ");
@@ -244,7 +230,6 @@ public class WeatherService {
             }
         }
         
-        // Ветер
         if (windSpeed > 15) {
             recommendation.append("💨 Ураганный ветер! Будьте осторожны. ");
         } else if (windSpeed > 10) {
@@ -253,7 +238,6 @@ public class WeatherService {
             recommendation.append("🍃 Умеренный ветер. ");
         }
         
-        // Осадки
         String descLower = description.toLowerCase();
         if (precipitation > 0) {
             if (descLower.contains("снег")) {
@@ -267,14 +251,12 @@ public class WeatherService {
             }
         }
         
-        // Облачность
         if (clouds < 20) {
             recommendation.append("☀️ Солнечно. Солнцезащитный крем. ");
         } else if (clouds > 80) {
             recommendation.append("☁️ Пасмурно. ");
         }
         
-        // Влажность
         if (humidity > 85) {
             recommendation.append("💧 Очень влажно. Неприятно. ");
         } else if (humidity > 70) {
@@ -283,7 +265,6 @@ public class WeatherService {
             recommendation.append("🏜️ Сухо. Пейте больше воды. ");
         }
         
-        // Дополнительные условия
         if (descLower.contains("туман") || descLower.contains("fog")) {
             recommendation.append("🌫️ Туман. Плохая видимость. ");
         }
@@ -291,7 +272,6 @@ public class WeatherService {
             recommendation.append("⛈️ Гроза! Оставайтесь в помещении. ");
         }
         
-        // Финальный совет
         recommendation.append(" Хорошего дня!");
         
         String result = recommendation.toString();
@@ -302,7 +282,6 @@ public class WeatherService {
         return result;
     }
     
-    // ========== МЕТОД: ПРОГНОЗ НА 5 ДНЕЙ ==========
     public List<WeatherLog> get5DayForecast(String city) {
         log.info("Запрос прогноза на 5 дней для города: {}", city);
         
@@ -314,7 +293,6 @@ public class WeatherService {
             
             String jsonResponse = restTemplate.getForObject(url, String.class);
             
-            // Проверка на несуществующий город
             if (jsonResponse == null || jsonResponse.contains("\"cod\":\"404\"")) {
                 log.error("Город не найден для прогноза: {}", city);
                 throw new CityNotFoundException(city);
@@ -324,8 +302,6 @@ public class WeatherService {
             JsonNode list = root.path("list");
             
             List<WeatherLog> forecast = new ArrayList<>();
-            
-            // Берем прогноз на 12:00 каждого дня (каждые 8 записей = 24 часа / 3 часа)
             for (int i = 0; i < 40 && i < list.size(); i += 8) {
                 JsonNode dayData = list.get(i);
                 
@@ -344,12 +320,10 @@ public class WeatherService {
                 dayLog.setWindDirection(convertDegToDirection(dayLog.getWindDeg()));
                 dayLog.setClouds(dayData.path("clouds").path("all").asInt());
                 
-                // Иконка для прогноза
                 String weatherIcon = dayData.path("weather").get(0).path("icon").asText();
                 dayLog.setWeatherIcon(weatherIcon);
                 dayLog.setWeatherMain(dayData.path("weather").get(0).path("main").asText());
                 
-                // Генерация рекомендации
                 String recommendation = generateRecommendation(
                     dayLog.getTemperature(), 
                     desc, 
@@ -362,7 +336,6 @@ public class WeatherService {
             
             log.info("Прогноз получен: {} дней", forecast.size());
             
-            // Логируем вместо WebSocket
             log.info("Уведомление: Прогноз на 5 дней для {} загружен", city);
             
             return forecast;
@@ -378,7 +351,6 @@ public class WeatherService {
         }
     }
 
-    // ========== МЕТОД: ПОИСК ГОРОДОВ ==========
     public List<CitySuggestion> getCitySuggestions(String query) {
         log.info("Поиск городов по запросу: {}", query);
         
@@ -407,7 +379,6 @@ public class WeatherService {
             
             log.info("Найдено городов: {}", suggestions.size());
             
-            // Логируем вместо WebSocket
             log.info("Уведомление: Поиск городов по запросу '{}' завершен. Найдено: {}", query, suggestions.size());
             
             return suggestions;

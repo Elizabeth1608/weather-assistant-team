@@ -24,7 +24,7 @@ public class ApiTestController {
             }
             
             int length = Math.min(response.length(), 100);
-            return "✅ API работает! Ответ: " + response.substring(0, length) + "...";
+            return "API работает! Ответ: " + response.substring(0, length) + "...";
             
         } catch (Exception e) {
             return "Ошибка при запросе к API: " + e.getClass().getSimpleName() + " - " + e.getMessage();

@@ -14,13 +14,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.weather.client.config.Config;
+import com.weather.client.model.CitySuggestion;
 import com.weather.client.model.ForecastData;
 import com.weather.client.model.WeatherData;
 
 public class ApiService {
     private static final Gson gson = new Gson();
     
-    // 1. МЕТОД ДЛЯ ТЕКУЩЕЙ ПОГОДЫ
     public WeatherData getCurrentWeather(String city) {
         System.out.println("\n=== ЗАПРОС ПОГОДЫ ===");
         System.out.println("Город: " + city);
@@ -57,7 +57,6 @@ public class ApiService {
                 System.out.println(jsonResponse);
                 System.out.println("=== КОНЕЦ ОТВЕТА ===");
                 
-                // Проанализируем JSON
                 System.out.println("\n=== АНАЛИЗ JSON ===");
                 JsonObject json = gson.fromJson(jsonResponse, JsonObject.class);
                 System.out.println("Есть поле 'humidity'? " + json.has("humidity"));
@@ -78,13 +77,12 @@ public class ApiService {
             e.printStackTrace();
         }
         
-        // Если не удалось получить данные, вернуть тестовые
         if (result == null) {
             System.out.println("Возвращаем тестовые данные");
             result = createTestData(city);
         }
         
-        return result; // ВАЖНО: всегда возвращаем значение
+        return result;
     }
     
     private WeatherData parseWeatherResponse(String jsonResponse, String city) {
@@ -160,7 +158,6 @@ public class ApiService {
         return test;
     }
     
-    // 2. МЕТОД ДЛЯ ПРОГНОЗА НА 5 ДНЕЙ
     public List<ForecastData> get5DayForecast(String city) {
         System.out.println("\n=== ЗАПРОС ПРОГНОЗА НА 5 ДНЕЙ ===");
         System.out.println("Город: " + city);
@@ -204,13 +201,12 @@ public class ApiService {
             e.printStackTrace();
         }
         
-        // Если не удалось получить данные - возвращаем тестовые
         if (result == null) {
             System.out.println("Возвращаем тестовые данные прогноза");
             result = createTestForecastData();
         }
         
-        return result; // ВАЖНО: всегда возвращаем значение
+        return result; 
     }
     
     private List<ForecastData> parseForecastResponse(String jsonResponse, String city) {
@@ -222,51 +218,58 @@ public class ApiService {
             System.out.println("\n=== ПАРСИНГ ПРОГНОЗА ===");
             System.out.println("Получено дней: " + jsonArray.size());
             
-            for (int i = 0; i < Math.min(jsonArray.size(), 5); i++) {
+            int daysToShow = Math.min(jsonArray.size(), 4);
+            
+            for (int i = 0; i < daysToShow; i++) {
                 JsonObject dayJson = jsonArray.get(i).getAsJsonObject();
                 ForecastData forecast = new ForecastData();
                 
-                // Дата (сегодня + i дней)
                 forecast.setDate(LocalDate.now().plusDays(i + 1));
                 
-                // Температура
                 if (dayJson.has("temperature")) {
                     double temp = dayJson.get("temperature").getAsDouble();
                     forecast.setTempAvg(temp);
                     forecast.setTempMin(temp - 2);
                     forecast.setTempMax(temp + 2);
+                } else if (dayJson.has("temp")) {
+                    double temp = dayJson.get("temp").getAsDouble();
+                    forecast.setTempAvg(temp);
+                    forecast.setTempMin(temp - 2);
+                    forecast.setTempMax(temp + 2);
                 }
                 
-                // Описание
                 if (dayJson.has("description")) {
                     forecast.setDescription(dayJson.get("description").getAsString());
                 }
                 
-                // Иконка
                 if (dayJson.has("weatherIcon")) {
-                    String icon = dayJson.get("weatherIcon").getAsString();
-                    forecast.setIcon(icon);
-                    
-                    // Если нет иконки, определим по описанию
-                    if (icon == null || icon.isEmpty()) {
-                        if (forecast.getDescription() != null) {
-                            String desc = forecast.getDescription().toLowerCase();
-                            if (desc.contains("ясн") || desc.contains("clear")) {
-                                forecast.setIcon("01d");
-                            } else if (desc.contains("облачно") || desc.contains("cloud")) {
-                                forecast.setIcon("03d");
-                            } else if (desc.contains("дождь") || desc.contains("rain")) {
-                                forecast.setIcon("10d");
-                            } else if (desc.contains("снег") || desc.contains("snow")) {
-                                forecast.setIcon("13d");
-                            } else {
-                                forecast.setIcon("02d");
-                            }
+                    forecast.setIcon(dayJson.get("weatherIcon").getAsString());
+                } else if (dayJson.has("icon")) {
+                    forecast.setIcon(dayJson.get("icon").getAsString());
+                }
+                
+                if (forecast.getIcon() == null || forecast.getIcon().isEmpty()) {
+                    if (forecast.getDescription() != null) {
+                        String desc = forecast.getDescription().toLowerCase();
+                        if (desc.contains("ясн") || desc.contains("clear")) {
+                            forecast.setIcon("01d");
+                        } else if (desc.contains("облач") || desc.contains("cloud")) {
+                            forecast.setIcon("03d");
+                        } else if (desc.contains("дожд") || desc.contains("rain")) {
+                            forecast.setIcon("10d");
+                        } else if (desc.contains("снег") || desc.contains("snow")) {
+                            forecast.setIcon("13d");
+                        } else {
+                            forecast.setIcon("02d");
                         }
                     }
                 }
                 
-                System.out.println("День " + (i + 1) + ": " + forecast.getTempAvg() + "°C, " + forecast.getDescription());
+                System.out.println("День " + (i + 1) + ": " + 
+                    forecast.getDayOfWeek() + " - " + 
+                    forecast.getTempAvg() + "°C, " + 
+                    forecast.getDescription());
+                
                 forecastList.add(forecast);
             }
             
@@ -286,18 +289,15 @@ public class ApiService {
             ForecastData day = new ForecastData();
             day.setDate(LocalDate.now().plusDays(i));
             
-            // Разные тестовые температуры
             double baseTemp = 15.0 + (Math.random() * 10 - 5);
             day.setTempAvg(baseTemp);
             day.setTempMin(baseTemp - 2);
             day.setTempMax(baseTemp + 2);
             
-            // Тестовые описания
             String[] descriptions = {"Ясно", "Облачно", "Небольшой дождь", "Пасмурно", "Снег"};
             String desc = descriptions[i % descriptions.length];
             day.setDescription(desc);
             
-            // Иконки
             String[] icons = {"01d", "02d", "03d", "04d", "10d"};
             day.setIcon(icons[i % icons.length]);
             
@@ -305,5 +305,89 @@ public class ApiService {
         }
         
         return testData;
+    }
+    
+public List<CitySuggestion> getCitySuggestions(String query) {
+    System.out.println("\n=== ПОИСК ГОРОДОВ ===");
+    System.out.println("Запрос: " + query);
+    
+    List<CitySuggestion> suggestions = new ArrayList<>();
+    
+    try {
+        if (query.length() < 2) {
+            return suggestions;
+        }
+        
+        String encodedQuery = URLEncoder.encode(query, "UTF-8");
+        String urlString = "http://localhost:8085/api/weather/suggestions?query=" + encodedQuery;
+        
+        System.out.println("Запрос к: " + urlString);
+        
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(3000);
+        conn.setReadTimeout(3000);
+        
+        int responseCode = conn.getResponseCode();
+        System.out.println("Код ответа: " + responseCode);
+        
+        if (responseCode == 200) {
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+            
+            String jsonResponse = response.toString();
+            System.out.println("Ответ сервера: " + jsonResponse);
+            
+            JsonArray jsonArray = gson.fromJson(jsonResponse, JsonArray.class);
+            
+            for (int i = 0; i < jsonArray.size() && i < 5; i++) {
+                JsonObject cityJson = jsonArray.get(i).getAsJsonObject();
+                CitySuggestion suggestion = new CitySuggestion();
+                
+                if (cityJson.has("name")) {
+                    suggestion.setName(cityJson.get("name").getAsString());
+                }
+                
+                if (cityJson.has("country")) {
+                    suggestion.setCountry(cityJson.get("country").getAsString());
+                }
+                
+                if (cityJson.has("state")) {
+                    suggestion.setState(cityJson.get("state").getAsString());
+                }
+                
+                if (cityJson.has("lat")) {
+                    suggestion.setLat(cityJson.get("lat").getAsDouble());
+                }
+                
+                if (cityJson.has("lon")) {
+                    suggestion.setLon(cityJson.get("lon").getAsDouble());
+                }
+                
+                suggestions.add(suggestion);
+                System.out.println("Найден город: " + suggestion.getDisplayName());
+            }
+            
+            System.out.println("Найдено " + suggestions.size() + " городов");
+            
+        } else {
+            System.out.println("Ошибка сервера: код " + responseCode);
+            // Если сервер недоступен - просто возвращаем пустой список
+            // Пользователь увидит, что автодополнение не работает
+        }
+    } catch (Exception e) {
+        System.out.println("Ошибка при поиске городов: " + e.getMessage());
+        // Если сервер недоступен - возвращаем пустой список
+        // Пользователь сможет вручную ввести город
+    }
+    
+    return suggestions;
     }
 }
